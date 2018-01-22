@@ -24,7 +24,8 @@ defmodule MarsRovers.FileParse do
     do
       {:ok, %State{plateau: plateau, first_pos: first_pos, first_mov: first_mov, second_pos: second_pos, second_mov: second_mov}}
     else
-      _ -> nil
+      false -> :wrong_format_file
+      error -> error
     end
   end
 
@@ -38,7 +39,9 @@ defmodule MarsRovers.FileParse do
     do
       {:ok, plateau, rest}
     else
-      _ -> IO.puts "some error on plateau parsing"
+      _ ->
+        IO.puts "some error on plateau parsing"
+        :plateau_error
     end
   end
 
@@ -52,9 +55,11 @@ defmodule MarsRovers.FileParse do
     do
       {:ok, pos, rest}
     else
-      {:param, false}    -> IO.puts "wrong position params: #{inspect head}"
-      {:pos, false, pos} -> {:ok, pos, rest}
-      error              -> IO.puts "some error on pos parsing: #{inspect error}"
+      {:param, false, pos} -> {:error, pos}
+      {:pos, false, pos}   -> {:ok, pos, rest}
+      _                    ->
+        IO.puts "some error on pos parsing"
+        :position_error
     end
   end
 
@@ -66,7 +71,9 @@ defmodule MarsRovers.FileParse do
     do
       {:ok, mov, rest}
     else
-      _ -> IO.puts "some error on mov parsing"
+      _ ->
+        IO.puts "some error on mov parsing"
+        :movement_error
     end
   end
 end

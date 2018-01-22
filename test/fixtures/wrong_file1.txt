@@ -1,0 +1,5 @@
+5 5 3
+3 5 E
+RLMMLR
+4 1 W
+LMLMMR

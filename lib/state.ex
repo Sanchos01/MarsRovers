@@ -15,12 +15,12 @@ defmodule MarsRovers.State do
 
     def validate(pos = %Position{x: x, y: y, f: f}, %{x: plateau_x, y: plateau_y}) do
       with {:param, true} <- {:param, is_integer(x) and is_integer(y) and (f in @available_f)},
-           {:pos, true}   <- {:pos, x > 0 and y > 0 and x <= plateau_x and y <= plateau_y}
+           {:pos, true}   <- {:pos, x >= 0 and y >= 0 and x <= plateau_x and y <= plateau_y}
       do
         true
       else
-        {:pos, false} -> {:pos, false, %{pos | error: :cant_land}}
-        error         -> error
+        {:param, false} -> {:pos, false, %{pos | error: :wrong_position}}
+        {:pos, false}   -> {:pos, false, %{pos | error: :cant_land}}
       end
     end
     def validate(_), do: false

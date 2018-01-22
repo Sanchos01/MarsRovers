@@ -4,4 +4,4 @@ elixir:
 otp_release:
   - 20.0
 script:
-  - "mix do deps.get, coveralls.travis"
+  - "mix do compile, coveralls.travis"

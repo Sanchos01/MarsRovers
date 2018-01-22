@@ -1,21 +1,7 @@
 # MarsRovers
 [![Build Status](https://secure.travis-ci.org/Sanchos01/MarsRovers.svg "Build Status")](http://travis-ci.org/Sanchos01/MarsRovers) [![Coverage Status](https://coveralls.io/repos/github/Sanchos01/MarsRovers/badge.svg?branch=master)](https://coveralls.io/github/Sanchos01/MarsRovers?branch=master)
-**TODO: Add description**
 
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `mars_rovers` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:mars_rovers, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/mars_rovers](https://hexdocs.pm/mars_rovers).
-
+main function: MarsRovers.start/2
+first argument: path to file
+second argument is keyword options:
+ - :stop_on_blocked - if rover blocked stops for all time
