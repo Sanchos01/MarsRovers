@@ -15,7 +15,7 @@ defmodule MarsRovers.FileParse do
         end
       end)
       |> Enum.reverse()
-    with true                    <- length(lines) == 5,
+    with :ok                     <- check_length(lines),
          {:ok, plateau, rest}    <- parse_plateau(lines),
          {:ok, first_pos, rest}  <- parse_pos(rest, plateau),
          {:ok, first_mov, rest}  <- parse_mov(rest),
@@ -24,14 +24,15 @@ defmodule MarsRovers.FileParse do
     do
       {:ok, %State{plateau: plateau, first_pos: first_pos, first_mov: first_mov, second_pos: second_pos, second_mov: second_mov}}
     else
-      false -> :wrong_format_file
       error -> error
     end
   end
+  
+  defp check_length(list), do: if length(list) == 5, do: :ok, else: {:error, :wrong_format_file}
 
   defp parse_plateau([head | rest]) do
     with true            <- length(head) == 2,
-         ^head           <- [x, y] = head,
+         [x, y]          <- head,
          {plateau_x, ""} <- Integer.parse(x),
          {plateau_y, ""} <- Integer.parse(y),
          plateau         <- %Plateau{x: plateau_x, y: plateau_y},
@@ -47,7 +48,7 @@ defmodule MarsRovers.FileParse do
 
   defp parse_pos([head | rest], plateau) do
     with true        <- length(head) == 3,
-         ^head       <- [x, y, f] = head,
+         [x, y, f]   <- head,
          {pos_x, ""} <- Integer.parse(x),
          {pos_y, ""} <- Integer.parse(y),
          pos         <- %Position{x: pos_x, y: pos_y, f: f, error: nil},
