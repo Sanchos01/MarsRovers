@@ -14,7 +14,10 @@ defmodule MarsRovers do
     with {:ok, file}  <- File.read(path),
          {:ok, state} <- FileParse.format_and_validate(file)
     do
-      stop_on_blocked = opts[:stop_on_blocked] || false
+      stop_on_blocked = case opts[:stop_on_blocked] do
+        true -> true
+        _    -> false
+      end
       moving(state, stop_on_blocked)
     else
       error -> error
@@ -25,22 +28,23 @@ defmodule MarsRovers do
     {new_f_pos, new_f_mov} = new_pos_and_mov(plateau, f_pos, f_mov, s_pos, s_mov, stop_on_blocked)
     {new_s_pos, new_s_mov} = new_pos_and_mov(plateau, s_pos, s_mov, new_f_pos, new_f_mov, stop_on_blocked)
     new_state = %{state | first_pos: new_f_pos, first_mov: new_f_mov, second_pos: new_s_pos, second_mov: new_s_mov}
-    case state == new_state do
-      false -> moving(new_state, stop_on_blocked)
-      true ->
-        f_result = result(f_pos)
-        s_result = result(s_pos)
-        IO.puts("#{inspect f_result}")
-        IO.puts("#{inspect s_result}")
-        "#{inspect f_result}\n\n#{inspect s_result}"
+    if state != new_state do
+      moving(new_state, stop_on_blocked)
+    else
+      f_result = result(f_pos)
+      s_result = result(s_pos)
+      IO.puts("#{inspect f_result}")
+      IO.puts("#{inspect s_result}")
+      "#{inspect f_result}\n\n#{inspect s_result}"
     end
   end
 
-  defp new_pos_and_mov(_plateau, pos = %{error: :path_blocked}, mov, _s_pos, _s_mov, true), do: {pos, mov}
-  defp new_pos_and_mov(_plateau, pos = %{error: error}, mov, _s_pos, _s_mov, _stop_on_blocked) when not (error in ~w(nil path_blocked)a), do: {pos, mov}
-  defp new_pos_and_mov(_plateau, pos, mov = %{commands: ""}, _s_pos, _s_mov, _stop_on_blocked), do: {pos, mov}
-  defp new_pos_and_mov(_plateau, pos, mov = %{commands: <<command::bytes-size(1), rest_mov::binary>>}, _s_pos, _s_mov, _stop_on_blocked) when command in ~w(L R), do: {new_pos(pos, mov), %Movement{commands: rest_mov}}
-  defp new_pos_and_mov(plateau, pos, mov = %{commands: "M" <> rest_mov}, s_pos = %{x: s_x, y: s_y}, s_mov, _stop_on_blocked) do
+  defp new_pos_and_mov(plateau, pos, mov, second_pos, second_mov, stop_on_blocked)
+  defp new_pos_and_mov(_, pos = %{error: :path_blocked}, mov, _, _, true), do: {pos, mov}
+  defp new_pos_and_mov(_, pos = %{error: error}, mov, _, _, _) when not (error in ~w(nil path_blocked)a), do: {pos, mov}
+  defp new_pos_and_mov(_, pos, mov = %{commands: ""}, _, _, _), do: {pos, mov}
+  defp new_pos_and_mov(_, pos, mov = %{commands: <<command::bytes-size(1), rest_mov::binary>>}, _, _, _) when command in ~w(L R), do: {new_pos(pos, mov), %Movement{commands: rest_mov}}
+  defp new_pos_and_mov(plateau, pos, mov = %{commands: "M" <> rest_mov}, s_pos = %{x: s_x, y: s_y}, s_mov, _) do
     %{x: new_x, y: new_y} = new_pos = new_pos(pos, "M")
     %{x: new_s_x, y: new_s_y} = new_pos(s_pos, s_mov, true)
     cond do
