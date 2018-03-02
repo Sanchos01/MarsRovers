@@ -4,7 +4,7 @@ defmodule MarsRovers.State do
     @enforce_keys ~w(x y)a
     defstruct ~w(x y)a
 
-    def validate(plateau = %Plateau{}), do: is_integer(plateau.x) and is_integer(plateau.y)
+    def validate(%Plateau{x: x, y: y}), do: is_integer(x) and is_integer(y)
     def validate(_), do: false
   end
 
@@ -13,28 +13,30 @@ defmodule MarsRovers.State do
     defstruct x: 0, y: 0, f: "N", error: nil
     @available_f ~w(N E S W)s
 
-    def validate(pos = %Position{}, plateau = %{x: _, y: _}) do
-      validate_pos(pos) && validate_pos_on_plateau(pos, plateau)
+    def validate(pos = %Position{}, plateau = %Plateau{}) do
+      with true <- validate_pos(pos) do
+        validate_pos_on_plateau(pos, plateau)
+      else
+        error -> error
+      end
     end
     def validate(_), do: false
-    
-    defp validate_pos(pos = %Position{x: x, y: y, f: f}) do
+
+    defp validate_pos(pos = %{x: x, y: y, f: f}) do
       if is_integer(x) and is_integer(y) and (f in @available_f) do
         true
       else
         {:pos, false, %{pos | error: :wrong_position}}
       end
     end
-    defp validate_pos(_), do: false
-    
-    defp validate_pos_on_plateau(pos = %Position{x: x, y: y}, %{x: plateau_x, y: plateau_y}) do
+
+    defp validate_pos_on_plateau(pos = %{x: x, y: y}, %{x: plateau_x, y: plateau_y}) do
       if x >= 0 and y >= 0 and x <= plateau_x and y <= plateau_y do
         true
       else
         {:pos, false, %{pos | error: :cant_land}}
       end
     end
-    defp validate_pos_on_plateau(_, _), do: false
   end
 
   defmodule Movement do
