@@ -28,7 +28,7 @@ defmodule MarsRovers.FileParse do
     end
   end
   
-  defp check_length(list), do: if length(list) == 5, do: :ok, else: {:error, :wrong_format_file}
+  defp check_length(list), do: if length(list) == 5, do: :ok, else: :wrong_format_file
 
   defp parse_plateau([head | rest]) do
     with true            <- length(head) == 2,
