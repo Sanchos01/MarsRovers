@@ -22,7 +22,7 @@ defmodule MarsRovers.State do
       if is_integer(x) and is_integer(y) and (f in @available_f) do
         true
       else
-        {:pos, false, %{pos | error: :wrong_position}
+        {:pos, false, %{pos | error: :wrong_position}}
       end
     end
     defp validate_pos(_), do: false
@@ -31,7 +31,7 @@ defmodule MarsRovers.State do
       if x >= 0 and y >= 0 and x <= plateau_x and y <= plateau_y do
         true
       else
-        {:pos, false, %{pos | error: :cant_land}
+        {:pos, false, %{pos | error: :cant_land}}
       end
     end
     defp validate_pos_on_plateau(_, _), do: false
