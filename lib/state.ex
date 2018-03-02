@@ -13,17 +13,28 @@ defmodule MarsRovers.State do
     defstruct x: 0, y: 0, f: "N", error: nil
     @available_f ~w(N E S W)s
 
-    def validate(pos = %Position{x: x, y: y, f: f}, %{x: plateau_x, y: plateau_y}) do
-      with {:param, true} <- {:param, is_integer(x) and is_integer(y) and (f in @available_f)},
-           {:pos, true}   <- {:pos, x >= 0 and y >= 0 and x <= plateau_x and y <= plateau_y}
-      do
-        true
-      else
-        {:param, false} -> {:pos, false, %{pos | error: :wrong_position}}
-        {:pos, false}   -> {:pos, false, %{pos | error: :cant_land}}
-      end
+    def validate(pos = %Position{}, plateau = %{x: _, y: _}) do
+      validate_pos(pos) && validate_pos_on_plateau(pos, plateau)
     end
     def validate(_), do: false
+    
+    defp validate_pos(pos = %Position{x: x, y: y, f: f}) do
+      if is_integer(x) and is_integer(y) and (f in @available_f) do
+        true
+      else
+        {:pos, false, %{pos | error: :wrong_position}
+      end
+    end
+    defp validate_pos(_), do: false
+    
+    defp validate_pos_on_plateau(pos = %Position{x: x, y: y}, %{x: plateau_x, y: plateau_y}) do
+      if x >= 0 and y >= 0 and x <= plateau_x and y <= plateau_y do
+        true
+      else
+        {:pos, false, %{pos | error: :cant_land}
+      end
+    end
+    defp validate_pos_on_plateau(_, _), do: false
   end
 
   defmodule Movement do
