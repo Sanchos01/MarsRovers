@@ -14,7 +14,7 @@ defmodule MarsRovers do
     with {:ok, file}  <- File.read(path),
          {:ok, state} <- FileParse.format_and_validate(file)
     do
-      stop_on_blocked = opts[:stop_ob_blocked] == true
+      stop_on_blocked = opts[:stop_on_blocked] == true
       moving(state, stop_on_blocked)
     else
       error -> error
