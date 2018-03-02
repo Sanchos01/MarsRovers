@@ -23,19 +23,11 @@ defmodule MarsRovers.State do
     def validate(_), do: false
 
     defp validate_pos(pos = %{x: x, y: y, f: f}) do
-      if is_integer(x) and is_integer(y) and (f in @available_f) do
-        true
-      else
-        {:pos, false, %{pos | error: :wrong_position}}
-      end
+      (is_integer(x) and is_integer(y) and (f in @available_f)) || {:pos, false, %{pos | error: :wrong_position}}
     end
 
     defp validate_pos_on_plateau(pos = %{x: x, y: y}, %{x: plateau_x, y: plateau_y}) do
-      if x >= 0 and y >= 0 and x <= plateau_x and y <= plateau_y do
-        true
-      else
-        {:pos, false, %{pos | error: :cant_land}}
-      end
+      (x >= 0 and y >= 0 and x <= plateau_x and y <= plateau_y) || {:pos, false, %{pos | error: :cant_land}}
     end
   end
 
